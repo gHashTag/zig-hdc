@@ -31,14 +31,6 @@ jobs:
           # The version trinity targets. Building with anything else would prove
           # the package works for somebody who is not the consumer.
           version: 0.15.2
-      # Temporary: this runner has the right zig and a fast link, so it is the
-      # cheapest place to compute the dependency hash. Removed once pinned.
-      - name: print the golden_float hash
-        run: |
-          zig fetch --save=zig_golden_float https://github.com/gHashTag/zig-golden-float/archive/main.tar.gz
-          echo '--- build.zig.zon ---'
-          cat build.zig.zon
-
       - run: zig build
       - run: zig build test
       - name: The modules a consumer asks for must exist
