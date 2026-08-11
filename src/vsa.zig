@@ -99,18 +99,20 @@ pub const TaskNode = concurrency.TaskNode;
 pub const TaskState = concurrency.TaskState;
 pub const getGlobalPool = concurrency.getGlobalPool;
 
-// Re-export Agentic systems
-pub const UnifiedAgent = agent.UnifiedAgent;
-pub const AgentMemory = agent.AgentMemory;
-pub const AgentRole = agent.AgentRole;
-pub const Modality = agent.Modality;
-pub const MultiModalToolUse = agent.MultiModalToolUse;
-pub const AutonomousAgent = agent.AutonomousAgent;
-pub const ImprovementLoop = agent.ImprovementLoop;
-pub const UnifiedAutonomousSystem = agent.UnifiedAutonomousSystem;
-pub const UnifiedRequest = agent.UnifiedRequest;
-pub const UnifiedResponse = agent.UnifiedResponse;
-pub const SystemCapability = agent.SystemCapability;
+// Re-export Agentic systems -- withdrawn with the facade above. Every name here
+// resolved through vsa/agent.zig, whose five parts have never existed in any
+// repository, so none of these has ever been a symbol anybody could reference.
+// pub const UnifiedAgent = agent.UnifiedAgent;
+// pub const AgentMemory = agent.AgentMemory;
+// pub const AgentRole = agent.AgentRole;
+// pub const Modality = agent.Modality;
+// pub const MultiModalToolUse = agent.MultiModalToolUse;
+// pub const AutonomousAgent = agent.AutonomousAgent;
+// pub const ImprovementLoop = agent.ImprovementLoop;
+// pub const UnifiedAutonomousSystem = agent.UnifiedAutonomousSystem;
+// pub const UnifiedRequest = agent.UnifiedRequest;
+// pub const UnifiedResponse = agent.UnifiedResponse;
+// pub const SystemCapability = agent.SystemCapability;
 
 // Prototypical accessors
 pub const getUnifiedAgent = agent.getUnifiedAgent;
