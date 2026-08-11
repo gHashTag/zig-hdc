@@ -1,0 +1,42 @@
+name: CI
+
+# This package could not be depended on by anything, and nothing said so.
+#
+# Its manifest opened with `{` instead of `.{`, named itself `zig_hdc` where an
+# enum literal was required, carried no fingerprint, and gave its dependency a
+# url with no hash. Its build script also passed `root_source_file` to addTest,
+# which stopped being a field in 0.15. Any of those alone is fatal to a
+# consumer, and the repository had no CI at all, so all four sat there
+# indefinitely -- a library that reads as available and is not.
+#
+# The consumer that needed it is gHashTag/trinity, whose build has been failing
+# since March partly because src/vsa.zig lives here now.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          # The version trinity targets. Building with anything else would prove
+          # the package works for somebody who is not the consumer.
+          version: 0.15.2
+      - run: zig build
+      - run: zig build test
+      - name: The modules a consumer asks for must exist
+        run: |
+          set -euo pipefail
+          for m in zig-hdc zig-hdc-vsa zig-hdc-sequence; do
+            grep -q "b.addModule(\"$m\"" build.zig || { echo "::error::module $m is gone"; exit 1; }
+            echo "  exports $m"
+          done

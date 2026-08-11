@@ -31,12 +31,17 @@ pub fn build(b: *std.Build) void {
     seq_mod.addImport("zig_golden_float", zig_golden_float.module("golden-float"));
 
     // Tests
-    const tests = b.addTest(.{
+    //
+    // addTest takes a root_module rather than a root_source_file since 0.15;
+    // passing the old field is a compile error in the build script itself, which
+    // is why this package could not be depended on at all.
+    const test_mod = b.createModule(.{
         .root_source_file = b.path("src/vsa.zig"),
         .target = target,
         .optimize = optimize,
     });
-    tests.root_module.addImport("zig_golden_float", zig_golden_float.module("golden-float"));
+    test_mod.addImport("zig_golden_float", zig_golden_float.module("golden-float"));
+    const tests = b.addTest(.{ .root_module = test_mod });
     b.installArtifact(tests);
 
     const test_step = b.step("test", "Run tests");
