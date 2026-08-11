@@ -144,3 +144,17 @@ test {
 }
 
 // φ² + 1/φ² = 3 | TRINITY
+
+test "every public declaration of this module is analysed" {
+    // Zig analyses top-level declarations lazily, so `zig build test` proves only
+    // that the declarations the tests happen to reference compile. A consumer
+    // referencing anything else got errors this package's own green CI could not
+    // see -- which is how five API-drift errors sat here while the badge stayed
+    // green, and how gHashTag/trinity#701 found them within a minute of trying
+    // to depend on this.
+    //
+    // With the duplicated files now re-exporting one repaired implementation,
+    // this is what proves the whole surface goes through the compiler rather
+    // than only the part the tests walk.
+    @import("std").testing.refAllDeclsRecursive(@This());
+}
