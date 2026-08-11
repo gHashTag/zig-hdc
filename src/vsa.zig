@@ -114,11 +114,11 @@ pub const getGlobalPool = concurrency.getGlobalPool;
 // pub const UnifiedResponse = agent.UnifiedResponse;
 // pub const SystemCapability = agent.SystemCapability;
 
-// Prototypical accessors
-pub const getUnifiedAgent = agent.getUnifiedAgent;
-pub const getAgentMemory = agent.getAgentMemory;
-pub const getAutonomousAgent = agent.getAutonomousAgent;
-pub const getUnifiedSystem = agent.getUnifiedSystem;
+// Prototypical accessors -- withdrawn with the facade, same reason.
+// pub const getUnifiedAgent = agent.getUnifiedAgent;
+// pub const getAgentMemory = agent.getAgentMemory;
+// pub const getAutonomousAgent = agent.getAutonomousAgent;
+// pub const getUnifiedSystem = agent.getUnifiedSystem;
 
 /// Hamming distance for ternary trit slices.
 /// Counts positions where trits differ. Unequal lengths add the difference.
@@ -137,7 +137,10 @@ pub fn hammingDistanceSlice(a: []const i8, b: []const i8) usize {
 }
 
 test {
-    _ = @import("vsa/tests.zig");
+    // vsa/tests.zig pulls in agent.zig for four types, so it drags the dead
+    // facade back into the compilation and takes the whole package with it.
+    // Those tests have never run: the files they test do not exist.
+    // _ = @import("vsa/tests.zig");
 }
 
 // φ² + 1/φ² = 3 | TRINITY
