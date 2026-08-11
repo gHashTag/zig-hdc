@@ -72,7 +72,7 @@ pub fn encodeWord(word: []const u8) HybridBigInt {
 
     for (word[1..]) |c| {
         var char_vec = charToVector(c);
-        result = core.bundle2(&result, &char_vec, std.heap.page_allocator);
+        result = core.bundle2(&result, &char_vec);
     }
 
     return result;
@@ -87,8 +87,10 @@ pub fn encodeWordWithPosition(word: []const u8) HybridBigInt {
     for (word, 0..) |c, pos| {
         var char_vec = charToVector(c);
         // Permute by position to preserve order information
-        const permuted = core.permute(&char_vec, pos);
-        result = result.add(&permuted, std.heap.page_allocator);
+        // var, not const: add takes *Self because the value caches its own
+        // unpacked form, and filling that cache is a mutation.
+        var permuted = core.permute(&char_vec, pos);
+        result = result.add(&permuted);
     }
 
     return result;
@@ -134,7 +136,7 @@ pub fn encodeTextWithNgrams(text: []const u8, allocator: Allocator) !struct {
     var char_vec = HybridBigInt.zero();
     for (text) |c| {
         var cv = charToVector(c);
-        char_vec = char_vec.add(&cv, std.heap.page_allocator);
+        char_vec = char_vec.add(&cv);
     }
 
     // N-gram level encoding
@@ -144,7 +146,7 @@ pub fn encodeTextWithNgrams(text: []const u8, allocator: Allocator) !struct {
     if (text.len >= NGRAM_N) {
         for (0..text.len - NGRAM_N + 1) |i| {
             var ngram = encodeNgram(text[i..][0..NGRAM_N]);
-            ngram_vec = ngram_vec.add(&ngram, std.heap.page_allocator);
+            ngram_vec = ngram_vec.add(&ngram);
             ngram_count += 1;
         }
     }
@@ -155,7 +157,7 @@ pub fn encodeTextWithNgrams(text: []const u8, allocator: Allocator) !struct {
     var ngram_weighted = ngram_vec;
 
     // Scale vectors (simplified: just bundle)
-    const combined = core.bundle2(&char_weighted, &ngram_weighted, std.heap.page_allocator);
+    const combined = core.bundle2(&char_weighted, &ngram_weighted);
 
     return .{
         .char_level = char_vec,
@@ -186,7 +188,7 @@ pub fn encodeText(text: []const u8) HybridBigInt {
         } else if (!is_alpha and in_word) {
             const word = text[word_start..i];
             var word_vec = encodeWord(word);
-            result = result.add(&word_vec, std.heap.page_allocator);
+            result = result.add(&word_vec);
             in_word = false;
         }
     }
@@ -195,7 +197,7 @@ pub fn encodeText(text: []const u8) HybridBigInt {
     if (in_word) {
         const word = text[word_start..];
         var word_vec = encodeWord(word);
-        result = result.add(&word_vec, std.heap.page_allocator);
+        result = result.add(&word_vec);
     }
 
     return result;
@@ -325,7 +327,7 @@ pub fn encodeTextTFIDF(text: []const u8, stats: *const DocumentStats) HybridBigI
             const scale = @as(usize, @intFromFloat(idf));
             var weighted = word_vec;
             for (0..@max(1, scale)) |_| {
-                result = result.add(&weighted, std.heap.page_allocator);
+                result = result.add(&weighted);
             }
 
             in_word = false;
@@ -340,7 +342,7 @@ pub fn encodeTextTFIDF(text: []const u8, stats: *const DocumentStats) HybridBigI
         const scale = @as(usize, @intFromFloat(idf));
         var weighted = word_vec;
         for (0..@max(1, scale)) |_| {
-            result = result.add(&weighted, std.heap.page_allocator);
+            result = result.add(&weighted);
         }
     }
 

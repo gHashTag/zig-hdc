@@ -93,7 +93,12 @@ pub const TextCorpus = storage.TextCorpus;
 
 // Re-export concurrency & DAG
 pub const ChaseLevDeque = concurrency.ChaseLevDeque;
-pub const LockFreePool = concurrency.LockFreePool;
+// LockFreePool is not re-exported. It has never existed in this repository's
+// concurrency module, nor in golden-float's -- both export the same
+// twenty-three names and that is not one of them. The line sat here referring
+// to nothing, and nothing complained, because lazy analysis never asked what it
+// pointed at. Forcing the whole surface through the compiler asked, and the
+// answer was that it points at nothing.
 pub const DependencyGraph = concurrency.DependencyGraph;
 pub const TaskNode = concurrency.TaskNode;
 pub const TaskState = concurrency.TaskState;
@@ -144,3 +149,17 @@ test {
 }
 
 // φ² + 1/φ² = 3 | TRINITY
+
+test "every public declaration of this module is analysed" {
+    // Zig analyses top-level declarations lazily, so `zig build test` proves only
+    // that the declarations the tests happen to reference compile. A consumer
+    // referencing anything else got errors this package's own green CI could not
+    // see -- which is how five API-drift errors sat here while the badge stayed
+    // green, and how gHashTag/trinity#701 found them within a minute of trying
+    // to depend on this.
+    //
+    // With the duplicated files now re-exporting one repaired implementation,
+    // this is what proves the whole surface goes through the compiler rather
+    // than only the part the tests walk.
+    @import("std").testing.refAllDeclsRecursive(@This());
+}
