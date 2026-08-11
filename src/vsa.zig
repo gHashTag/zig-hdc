@@ -26,7 +26,18 @@ pub const core = @import("vsa/core.zig");
 pub const encoding = @import("vsa/encoding.zig");
 pub const storage = @import("vsa/storage.zig");
 pub const concurrency = @import("vsa/concurrency.zig");
-pub const agent = @import("vsa/agent.zig");
+// vsa/agent.zig is not exported, because it cannot compile and never could.
+// It imports agent/types.zig, agent/memory.zig, agent/unified.zig,
+// agent/autonomous.zig and agent/system.zig -- five files that have never
+// been tracked in this repository and do not exist in gHashTag/trinity
+// either, which is where the rest of this package was migrated from. So
+// the facade was never buildable by anybody, and exporting it from the
+// module root made the whole package unbuildable for every consumer.
+//
+// The file is left in place rather than deleted: unreferenced sources are
+// not compiled, and whether the agent layer should be finished or dropped
+// is a decision about this library, not a way to turn a build green.
+// pub const agent = @import("vsa/agent.zig");
 pub const HRR = @import("vsa/hrr.zig").HRR;
 
 // Re-export common types
@@ -88,24 +99,26 @@ pub const TaskNode = concurrency.TaskNode;
 pub const TaskState = concurrency.TaskState;
 pub const getGlobalPool = concurrency.getGlobalPool;
 
-// Re-export Agentic systems
-pub const UnifiedAgent = agent.UnifiedAgent;
-pub const AgentMemory = agent.AgentMemory;
-pub const AgentRole = agent.AgentRole;
-pub const Modality = agent.Modality;
-pub const MultiModalToolUse = agent.MultiModalToolUse;
-pub const AutonomousAgent = agent.AutonomousAgent;
-pub const ImprovementLoop = agent.ImprovementLoop;
-pub const UnifiedAutonomousSystem = agent.UnifiedAutonomousSystem;
-pub const UnifiedRequest = agent.UnifiedRequest;
-pub const UnifiedResponse = agent.UnifiedResponse;
-pub const SystemCapability = agent.SystemCapability;
+// Re-export Agentic systems -- withdrawn with the facade above. Every name here
+// resolved through vsa/agent.zig, whose five parts have never existed in any
+// repository, so none of these has ever been a symbol anybody could reference.
+// pub const UnifiedAgent = agent.UnifiedAgent;
+// pub const AgentMemory = agent.AgentMemory;
+// pub const AgentRole = agent.AgentRole;
+// pub const Modality = agent.Modality;
+// pub const MultiModalToolUse = agent.MultiModalToolUse;
+// pub const AutonomousAgent = agent.AutonomousAgent;
+// pub const ImprovementLoop = agent.ImprovementLoop;
+// pub const UnifiedAutonomousSystem = agent.UnifiedAutonomousSystem;
+// pub const UnifiedRequest = agent.UnifiedRequest;
+// pub const UnifiedResponse = agent.UnifiedResponse;
+// pub const SystemCapability = agent.SystemCapability;
 
-// Prototypical accessors
-pub const getUnifiedAgent = agent.getUnifiedAgent;
-pub const getAgentMemory = agent.getAgentMemory;
-pub const getAutonomousAgent = agent.getAutonomousAgent;
-pub const getUnifiedSystem = agent.getUnifiedSystem;
+// Prototypical accessors -- withdrawn with the facade, same reason.
+// pub const getUnifiedAgent = agent.getUnifiedAgent;
+// pub const getAgentMemory = agent.getAgentMemory;
+// pub const getAutonomousAgent = agent.getAutonomousAgent;
+// pub const getUnifiedSystem = agent.getUnifiedSystem;
 
 /// Hamming distance for ternary trit slices.
 /// Counts positions where trits differ. Unequal lengths add the difference.
@@ -124,7 +137,10 @@ pub fn hammingDistanceSlice(a: []const i8, b: []const i8) usize {
 }
 
 test {
-    _ = @import("vsa/tests.zig");
+    // vsa/tests.zig pulls in agent.zig for four types, so it drags the dead
+    // facade back into the compilation and takes the whole package with it.
+    // Those tests have never run: the files they test do not exist.
+    // _ = @import("vsa/tests.zig");
 }
 
 // φ² + 1/φ² = 3 | TRINITY
