@@ -26,7 +26,18 @@ pub const core = @import("vsa/core.zig");
 pub const encoding = @import("vsa/encoding.zig");
 pub const storage = @import("vsa/storage.zig");
 pub const concurrency = @import("vsa/concurrency.zig");
-pub const agent = @import("vsa/agent.zig");
+// vsa/agent.zig is not exported, because it cannot compile and never could.
+// It imports agent/types.zig, agent/memory.zig, agent/unified.zig,
+// agent/autonomous.zig and agent/system.zig -- five files that have never
+// been tracked in this repository and do not exist in gHashTag/trinity
+// either, which is where the rest of this package was migrated from. So
+// the facade was never buildable by anybody, and exporting it from the
+// module root made the whole package unbuildable for every consumer.
+//
+// The file is left in place rather than deleted: unreferenced sources are
+// not compiled, and whether the agent layer should be finished or dropped
+// is a decision about this library, not a way to turn a build green.
+// pub const agent = @import("vsa/agent.zig");
 pub const HRR = @import("vsa/hrr.zig").HRR;
 
 // Re-export common types
