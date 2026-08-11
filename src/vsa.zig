@@ -93,7 +93,12 @@ pub const TextCorpus = storage.TextCorpus;
 
 // Re-export concurrency & DAG
 pub const ChaseLevDeque = concurrency.ChaseLevDeque;
-pub const LockFreePool = concurrency.LockFreePool;
+// LockFreePool is not re-exported. It has never existed in this repository's
+// concurrency module, nor in golden-float's -- both export the same
+// twenty-three names and that is not one of them. The line sat here referring
+// to nothing, and nothing complained, because lazy analysis never asked what it
+// pointed at. Forcing the whole surface through the compiler asked, and the
+// answer was that it points at nothing.
 pub const DependencyGraph = concurrency.DependencyGraph;
 pub const TaskNode = concurrency.TaskNode;
 pub const TaskState = concurrency.TaskState;
