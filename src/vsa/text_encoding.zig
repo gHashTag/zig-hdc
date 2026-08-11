@@ -87,7 +87,9 @@ pub fn encodeWordWithPosition(word: []const u8) HybridBigInt {
     for (word, 0..) |c, pos| {
         var char_vec = charToVector(c);
         // Permute by position to preserve order information
-        const permuted = core.permute(&char_vec, pos);
+        // var, not const: add takes *Self because the value caches its own
+        // unpacked form, and filling that cache is a mutation.
+        var permuted = core.permute(&char_vec, pos);
         result = result.add(&permuted);
     }
 
