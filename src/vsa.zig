@@ -144,3 +144,17 @@ test {
 }
 
 // φ² + 1/φ² = 3 | TRINITY
+
+test "every public declaration of this module is analysed" {
+    // Zig analyses top-level declarations lazily, so `zig build test` over this
+    // file proved only that the declarations it happened to reference compile.
+    // A consumer referencing anything else got errors this package's own green
+    // CI could not see -- gHashTag/trinity#701 hit exactly that: vsa/core.zig
+    // expects HybridBigInt to carry an `allocator` field and the golden-float
+    // version pinned here does not.
+    //
+    // refAllDeclsRecursive forces the whole public surface through the
+    // compiler, which is the only version of "this package builds" that means
+    // anything to somebody outside it.
+    @import("std").testing.refAllDeclsRecursive(@This());
+}
